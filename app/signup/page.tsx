@@ -15,7 +15,7 @@ export default function SignUpPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -28,7 +28,7 @@ export default function SignUpPage() {
     if (res?.error) {
       setError(res.error);
     } else if (res?.ok) {
-      window.location.href = "/";
+      window.location.href = "/dashboard";
     }
   };
 

@@ -1,8 +1,22 @@
-import NextAuth from "next-auth";
+import NextAuth, { type Session, type Account } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "../../../../lib/prisma";
+
+// Extend the JWT and Session types to include custom fields
+type ExtendedJWT = {
+  accessToken?: string;
+  refreshToken?: string;
+  provider?: string;
+  [key: string]: unknown;
+};
+
+type ExtendedSession = Session & {
+  accessToken?: string;
+  refreshToken?: string;
+  provider?: string;
+};
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -58,6 +72,36 @@ export const authOptions = {
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
+  callbacks: {
+    async jwt({
+      token,
+      account,
+    }: {
+      token: ExtendedJWT;
+      account?: Account | null;
+    }): Promise<ExtendedJWT> {
+      // Persist the OAuth access_token and refresh_token to the token right after signin
+      if (account) {
+        token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.provider = account.provider;
+      }
+      return token;
+    },
+    async session({
+      session,
+      token,
+    }: {
+      session: ExtendedSession;
+      token: ExtendedJWT;
+    }): Promise<ExtendedSession> {
+      // Make tokens available in the session
+      if (token.accessToken) session.accessToken = token.accessToken;
+      if (token.refreshToken) session.refreshToken = token.refreshToken;
+      if (token.provider) session.provider = token.provider;
+      return session;
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
