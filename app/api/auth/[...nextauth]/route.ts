@@ -18,15 +18,38 @@ export const authOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const email = credentials?.email;
-        const password = credentials?.password;
-        if (!email || !password) return null;
-        // Find user by email
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) return null;
-        // TODO: Replace with hashed password check in production
-        if (user.password !== password) return null;
-        return user;
+        try {
+          const email = credentials?.email;
+          const password = credentials?.password;
+          if (!email || !password) {
+            console.log("Missing email or password");
+            return null;
+          }
+          // Find user by email
+          let user = await prisma.user.findUnique({ where: { email } });
+          if (!user) {
+            console.log(`No user found for email ${email}, creating new user.`);
+            // Create new user (sign up)
+            // TODO: Hash password before saving in production
+            user = await prisma.user.create({
+              data: {
+                email,
+                password,
+              },
+            });
+            return user;
+          }
+          // TODO: Replace with hashed password check in production
+          if (user.password !== password) {
+            console.log(`Invalid password for user ${email}`);
+            return null;
+          }
+          console.log(`User ${email} authenticated successfully.`);
+          return user;
+        } catch (error) {
+          console.error("Error in authorize:", error);
+          return null;
+        }
       },
     }),
     GoogleProvider({
