@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { env } from "@/env";
 
 // Protected routes configuration
 const PROTECTED_ROUTES = ["/dashboard", "/settings"];
@@ -16,7 +17,7 @@ export async function middleware(request: NextRequest) {
   if (isProtectedRoute) {
     const token = await getToken({
       req: request,
-      secret: process.env.NEXTAUTH_SECRET,
+      secret: env.NEXTAUTH_SECRET,
     });
     if (!token) {
       // Not authenticated, redirect to sign in

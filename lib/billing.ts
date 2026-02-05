@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
+import { env } from "@/env";
 
-const BILLING_APP_URL = process.env.BILLING_APP_URL!;
-const JWT_SECRET = process.env.SAAS_JWT_SECRET!;
+const BILLING_APP_URL = env.BILLING_APP_URL;
+const JWT_SECRET = env.SAAS_JWT_SECRET;
 
 /**
  * Generate a signed JWT for the billing portal
