@@ -1,11 +1,14 @@
 import { Heading } from "@ui/Heading";
+import { getCurrentUser } from "@/lib/auth";
 import { Card } from "@ui/Card";
 import { Paragraph } from "@ui/Paragraph";
 import { Button } from "@ui/Button";
 import { Input } from "@ui/Input";
 import { User, BarChart2, LogOut } from "lucide-react";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const user = await getCurrentUser();
+  console.log("Current logged user:", user);
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">

@@ -20,6 +20,14 @@ type ExtendedSession = Session & {
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt" as const,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  jwt: {
+    secret: process.env.NEXTAUTH_SECRET,
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -75,11 +83,17 @@ export const authOptions = {
   callbacks: {
     async jwt({
       token,
+      user,
       account,
     }: {
       token: ExtendedJWT;
+      user?: any;
       account?: Account | null;
     }): Promise<ExtendedJWT> {
+      // Persist user data on first sign-in
+      if (user) {
+        token.sub = user.id;
+      }
       // Persist the OAuth access_token and refresh_token to the token right after signin
       if (account) {
         token.accessToken = account.access_token;
@@ -95,6 +109,11 @@ export const authOptions = {
       session: ExtendedSession;
       token: ExtendedJWT;
     }): Promise<ExtendedSession> {
+      // Add user id and email to session
+      if (session.user) {
+        session.user.id = token.sub;
+        session.user.email = token.email;
+      }
       // Make tokens available in the session
       if (token.accessToken) session.accessToken = token.accessToken;
       if (token.refreshToken) session.refreshToken = token.refreshToken;
