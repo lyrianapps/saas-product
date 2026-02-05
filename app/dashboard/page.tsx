@@ -4,7 +4,8 @@ import { Card } from "@ui/Card";
 import { Paragraph } from "@ui/Paragraph";
 import { Button } from "@ui/Button";
 import { Input } from "@ui/Input";
-import { User, BarChart2, LogOut } from "lucide-react";
+import { User, BarChart2 } from "lucide-react";
+import { LogoutButton } from "./logout-button";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
@@ -40,12 +41,7 @@ export default async function DashboardPage() {
                 Search
               </Button>
             </form>
-            <Button
-              variant="outline"
-              className="mt-4 w-full flex items-center justify-center gap-2"
-            >
-              <LogOut className="w-5 h-5" /> Log Out
-            </Button>
+            <LogoutButton />
           </Card>
         </div>
         <Card>

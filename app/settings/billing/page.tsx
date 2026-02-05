@@ -9,7 +9,7 @@ export default async function BillingPage() {
   }
 
   console.log("user ", user);
-  const billingUrl = getBillingPortalUrl(user.id!);
+  const billingUrl = getBillingPortalUrl(user.id);
 
   return (
     <div className="p-8">

@@ -2,9 +2,18 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
+// Protected routes configuration
+const PROTECTED_ROUTES = ["/dashboard", "/settings"];
+
 export async function middleware(request: NextRequest) {
-  // Only guard /dashboard and its subpages
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+  const pathname = request.nextUrl.pathname;
+
+  // Check if current path is protected
+  const isProtectedRoute = PROTECTED_ROUTES.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  if (isProtectedRoute) {
     const token = await getToken({
       req: request,
       secret: process.env.NEXTAUTH_SECRET,
@@ -12,7 +21,7 @@ export async function middleware(request: NextRequest) {
     if (!token) {
       // Not authenticated, redirect to sign in
       const signInUrl = new URL("/api/auth/signin", request.url);
-      signInUrl.searchParams.set("callbackUrl", request.nextUrl.pathname);
+      signInUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(signInUrl);
     }
   }
@@ -20,5 +29,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/settings/:path*"],
 };
