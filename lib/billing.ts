@@ -14,6 +14,7 @@ export function createBillingToken(userId: string): string {
     {
       iss: "saas-a", // Your registered app ID
       sub: userId, // User's ID in your SaaS
+      returnUrl: "http://localhost:3001/settings/billing",
     },
     JWT_SECRET,
     { expiresIn: "5m" }, // Short-lived token for security
