@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { getBillingPortalUrl } from "@/lib/billing";
 import { getCurrentUser } from "@/lib/auth";
+import { env } from "@/env";
 
 export default async function BillingPage() {
   const user = await getCurrentUser();
@@ -8,8 +9,8 @@ export default async function BillingPage() {
     redirect("/login");
   }
 
-  console.log("user ", user);
-  const billingUrl = getBillingPortalUrl(user.id);
+  const returnUrl = env.BILLING_APP_URL;
+  const billingUrl = getBillingPortalUrl(user.id, returnUrl);
 
   return (
     <div className="p-8">

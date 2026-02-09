@@ -24,6 +24,10 @@ const envSchema = z.object({
 
   // Billing
   BILLING_APP_URL: z.string().url("BILLING_APP_URL must be a valid URL"),
+
+  NEXT_PUBLIC_BILLING_REDIRECT_URL: z
+    .string()
+    .min(1, "NEXT_PUBLIC_BILLING_REDIRECT_URL is required"),
 });
 
 export type Env = z.infer<typeof envSchema>;
