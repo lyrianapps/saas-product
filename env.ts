@@ -8,6 +8,8 @@ const envSchema = z.object({
   // NextAuth Configuration
   NEXTAUTH_SECRET: z.string().min(1, "NEXTAUTH_SECRET is required"),
 
+  NEXT_PUBLIC_APP_ID: z.string().min(1, "NEXT_PUBLIC_APP_ID is required"),
+
   // Google OAuth
   GOOGLE_CLIENT_ID: z.string().min(1, "GOOGLE_CLIENT_ID is required"),
   GOOGLE_CLIENT_SECRET: z.string().min(1, "GOOGLE_CLIENT_SECRET is required"),

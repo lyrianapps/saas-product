@@ -6,10 +6,16 @@ import { Button } from "@ui/Button";
 import { Input } from "@ui/Input";
 import { User, BarChart2 } from "lucide-react";
 import { LogoutButton } from "./logout-button";
+import { getSubscriptionStatus } from "@/lib/billing";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   console.log("Current logged user:", user);
+
+  const subscription = user
+    ? await getSubscriptionStatus({ externalUserId: user.id })
+    : null;
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-4xl mx-auto">
@@ -30,6 +36,21 @@ export default async function DashboardPage() {
               <li>Revenue: $12,345</li>
               <li>Growth: 12% this month</li>
             </ul>
+            {subscription && (
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <Paragraph className="text-sm text-gray-600">
+                  Plan:{" "}
+                  <span className="font-medium">
+                    {subscription.plan ?? "None"}
+                  </span>
+                  {" · "}
+                  Status:{" "}
+                  <span className="font-medium">
+                    {subscription.status ?? "N/A"}
+                  </span>
+                </Paragraph>
+              </div>
+            )}
           </Card>
           <Card>
             <Heading level={3} className="mb-2">

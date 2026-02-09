@@ -28,3 +28,64 @@ export function getBillingPortalUrl(userId: string, returnUrl: string): string {
   const token = createBillingToken(userId, returnUrl);
   return `${BILLING_APP_URL}/api/billing/portal?token=${token}`;
 }
+
+/**
+ * Subscription plan types
+ */
+export const Plan = {
+  free_trial: "free_trial",
+  basic: "basic",
+  pro: "pro",
+} as const;
+
+export type Plan = (typeof Plan)[keyof typeof Plan];
+
+/**
+ * Subscription status types
+ */
+export const SubscriptionStatus = {
+  active: "active",
+  trialing: "trialing",
+  past_due: "past_due",
+  canceled: "canceled",
+  incomplete: "incomplete",
+} as const;
+
+export type SubscriptionStatus =
+  (typeof SubscriptionStatus)[keyof typeof SubscriptionStatus];
+
+export type SubscriptionStatusResponse = {
+  plan: Plan | null;
+  status: SubscriptionStatus | null;
+};
+
+/**
+ * Get subscription status for a user from the billing service
+ *
+ * GET billing_app_url/api/subscription/status?appId=xxx&externalUserId=xxx
+ * Header: x-api-key: <your-api-key>
+ */
+export async function getSubscriptionStatus({
+  externalUserId,
+}: {
+  externalUserId: string;
+}): Promise<SubscriptionStatusResponse> {
+  const url = new URL(`${BILLING_APP_URL}/api/subscription/status`);
+  url.searchParams.set("appId", env.NEXT_PUBLIC_APP_ID);
+  url.searchParams.set("externalUserId", externalUserId);
+
+  const response = await fetch(url.toString(), {
+    method: "GET",
+    headers: {
+      "x-api-key": env.NEXT_PUBLIC_API_KEY,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch subscription status: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  return response.json() as Promise<SubscriptionStatusResponse>;
+}
