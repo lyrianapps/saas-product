@@ -9,7 +9,7 @@ export default async function BillingPage() {
     redirect("/login");
   }
 
-  const returnUrl = env.BILLING_APP_URL;
+  const returnUrl = env.NEXT_PUBLIC_BILLING_REDIRECT_URL;
   const billingUrl = getBillingPortalUrl(user.id, returnUrl);
 
   return (
